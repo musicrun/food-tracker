@@ -7,13 +7,6 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 }
 
-const MEAL_EMOJI: Record<string, string> = {
-  breakfast: '🌅',
-  lunch: '☀️',
-  dinner: '🌙',
-  snack: '🍎',
-}
-
 export default async function HistoryPage() {
   const supabase = getSupabase()
   const { data: entries, error } = await supabase
@@ -27,7 +20,6 @@ export default async function HistoryPage() {
     return <p className="text-red-400">Failed to load history: {error.message}</p>
   }
 
-  // Group by date
   const byDate: Record<string, FoodEntry[]> = {}
   for (const entry of (entries ?? [])) {
     if (!byDate[entry.eaten_at]) byDate[entry.eaten_at] = []
@@ -45,7 +37,6 @@ export default async function HistoryPage() {
 
       {dates.length === 0 ? (
         <div className="text-center py-20 text-zinc-600">
-          <p className="text-5xl mb-4">📭</p>
           <p className="text-lg">No history yet.</p>
         </div>
       ) : (
@@ -60,13 +51,13 @@ export default async function HistoryPage() {
                   <span className="text-orange-400 font-semibold text-sm">{total.toLocaleString()} kcal</span>
                 </div>
                 <div className="space-y-2">
-                  {dayEntries.map(entry => (
+                  {dayEntries.map((entry: FoodEntry) => (
                     <div key={entry.id}
                       className="bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           {entry.meal_type && (
-                            <span className="text-sm">{MEAL_EMOJI[entry.meal_type] ?? '🍽️'}</span>
+                            <span className="text-xs uppercase text-zinc-500 font-medium">{entry.meal_type}</span>
                           )}
                           <p className="font-medium truncate">{entry.food_name}</p>
                         </div>
@@ -75,7 +66,7 @@ export default async function HistoryPage() {
                         )}
                         {(entry.protein_g || entry.carbs_g || entry.fat_g) && (
                           <p className="text-xs text-zinc-600 mt-1">
-                            P {Math.round(entry.protein_g ?? 0)}g · C {Math.round(entry.carbs_g ?? 0)}g · F {Math.round(entry.fat_g ?? 0)}g
+                            P {Math.round(entry.protein_g ?? 0)}g &middot; C {Math.round(entry.carbs_g ?? 0)}g &middot; F {Math.round(entry.fat_g ?? 0)}g
                           </p>
                         )}
                       </div>
@@ -88,4 +79,9 @@ export default async function HistoryPage() {
                 </div>
               </div>
             )
-         
+          })}
+        </div>
+      )}
+    </div>
+  )
+}

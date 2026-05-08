@@ -1,20 +1,11 @@
 import { getSupabase, FoodEntry } from '@/lib/supabase'
 
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack']
-const MEAL_EMOJI: Record<string, string> = {
-  breakfast: '🌅',
-  lunch: '☀️',
-  dinner: '🌙',
-  snack: '🍎',
-}
-
-function getMealColor(meal: string | null) {
-  switch (meal) {
-    case 'breakfast': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-    case 'lunch':     return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-    case 'dinner':    return 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-    default:          return 'bg-zinc-700/40 text-zinc-400 border-zinc-600/20'
-  }
+const MEAL_LABEL: Record<string, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+  snack: 'Snack',
 }
 
 export const dynamic = 'force-dynamic'
@@ -51,15 +42,13 @@ export default async function TodayPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <p className="text-zinc-500 text-sm mb-1">{todayLabel}</p>
         <h1 className="text-3xl font-bold">Today&apos;s Log</h1>
       </div>
 
-      {/* Calorie summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 col-span-2 sm:col-span-2">
+        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 col-span-2">
           <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Calories</p>
           <p className="text-4xl font-bold text-orange-400">{totalCalories.toLocaleString()}</p>
           <p className="text-zinc-600 text-xs mt-1">kcal today</p>
@@ -74,26 +63,23 @@ export default async function TodayPage() {
         </div>
       </div>
 
-      {/* Entries */}
       {entries && entries.length === 0 ? (
         <div className="text-center py-20 text-zinc-600">
-          <p className="text-5xl mb-4">🍽️</p>
           <p className="text-lg">No entries yet today.</p>
-          <p className="text-sm mt-1">Send Claude a photo to log your first meal.</p>
+          <p className="text-sm mt-1">Send a photo to Claude to log your first meal.</p>
         </div>
       ) : (
         <div className="space-y-6">
           {MEAL_ORDER.filter(m => byMeal[m]).map(meal => (
             <div key={meal}>
               <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                <span>{MEAL_EMOJI[meal]}</span>
-                <span>{meal}</span>
+                <span>{MEAL_LABEL[meal]}</span>
                 <span className="text-zinc-600 normal-case tracking-normal font-normal">
-                  · {byMeal[meal].reduce((s, e) => s + e.calories, 0)} kcal
+                  &middot; {byMeal[meal].reduce((s, e) => s + e.calories, 0)} kcal
                 </span>
               </h2>
               <div className="space-y-2">
-                {byMeal[meal].map(entry => (
+                {byMeal[meal].map((entry: FoodEntry) => (
                   <div key={entry.id}
                     className="bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
                     <div className="min-w-0">
@@ -103,7 +89,7 @@ export default async function TodayPage() {
                       )}
                       {(entry.protein_g || entry.carbs_g || entry.fat_g) && (
                         <p className="text-xs text-zinc-600 mt-1">
-                          P {Math.round(entry.protein_g ?? 0)}g · C {Math.round(entry.carbs_g ?? 0)}g · F {Math.round(entry.fat_g ?? 0)}g
+                          P {Math.round(entry.protein_g ?? 0)}g &middot; C {Math.round(entry.carbs_g ?? 0)}g &middot; F {Math.round(entry.fat_g ?? 0)}g
                         </p>
                       )}
                     </div>
@@ -122,4 +108,9 @@ export default async function TodayPage() {
       {entries && entries.length > 0 && (
         <div className="border-t border-zinc-800 pt-4 flex justify-between text-sm text-zinc-500">
           <span>{entries.length} item{entries.length !== 1 ? 's' : ''}</span>
-          <span>Fat: {Math.round(totalFat)}g</s
+          <span>Fat: {Math.round(totalFat)}g</span>
+        </div>
+      )}
+    </div>
+  )
+}
