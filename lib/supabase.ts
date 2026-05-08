@@ -1,9 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Lazy client — created at call time, not module load time,
+// so Next.js build doesn't fail when env vars aren't inlined yet.
+export function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
 
 export type FoodEntry = {
   id: string
@@ -15,6 +19,4 @@ export type FoodEntry = {
   protein_g: number | null
   carbs_g: number | null
   fat_g: number | null
-  meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | null
-  image_url: string | null
-}
+  me

@@ -1,6 +1,6 @@
-import { supabase, FoodEntry } from '@/lib/supabase'
+import { getSupabase, FoodEntry } from '@/lib/supabase'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T12:00:00')
@@ -15,6 +15,7 @@ const MEAL_EMOJI: Record<string, string> = {
 }
 
 export default async function HistoryPage() {
+  const supabase = getSupabase()
   const { data: entries, error } = await supabase
     .from('food_entries')
     .select('*')
@@ -87,9 +88,4 @@ export default async function HistoryPage() {
                 </div>
               </div>
             )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}
+         

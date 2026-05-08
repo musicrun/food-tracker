@@ -1,4 +1,4 @@
-import { supabase, FoodEntry } from '@/lib/supabase'
+import { getSupabase, FoodEntry } from '@/lib/supabase'
 
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack']
 const MEAL_EMOJI: Record<string, string> = {
@@ -17,9 +17,10 @@ function getMealColor(meal: string | null) {
   }
 }
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function TodayPage() {
+  const supabase = getSupabase()
   const today = new Date().toISOString().split('T')[0]
 
   const { data: entries, error } = await supabase
@@ -121,9 +122,4 @@ export default async function TodayPage() {
       {entries && entries.length > 0 && (
         <div className="border-t border-zinc-800 pt-4 flex justify-between text-sm text-zinc-500">
           <span>{entries.length} item{entries.length !== 1 ? 's' : ''}</span>
-          <span>Fat: {Math.round(totalFat)}g</span>
-        </div>
-      )}
-    </div>
-  )
-}
+          <span>Fat: {Math.round(totalFat)}g</s
